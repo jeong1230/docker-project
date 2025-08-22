@@ -23,7 +23,7 @@ jobs:
         run: docker login -u ${{env.USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: 생성된 이미지를 docker hub에 push 한다
-        run: docker push ${{env.USERNAME}}/backend:latest:latest
+        run: docker push ${{env.USERNAME}}/backend:latest
 
   deploy:
     needs: build-docker-image
