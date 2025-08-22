@@ -25,6 +25,21 @@ jobs:
       - name: 생성된 이미지를 docker hub에 push 한다
         run: docker push ${{env.USERNAME}}/backend:latest
 
+      - name: 개인키 인증서 파일 생성
+        run: |
+          #pwd
+          #ls -la
+          mkdir -p ~/.ssh
+          #ls -la
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          #ls -la
+          chmod 400 ~/.ssh/id_rsa
+          #ls -la
+          ssh-keyscan -t ed25519 ${{ secrets.SERVER_HOST_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{ secrets.SERVER_HOST_IP }} >> ~/.ssh/known_hosts
+          #ls -la ~/.ssh/known_hosts
+          scp frontend/index.html ${{ secrets.HOST_USERID }}@${{ secrets.SERVER_HOST_IP }}:${{ secrets.WORK_PATH }}
+
   deploy:
     needs: build-docker-image
     name: deploy
@@ -37,7 +52,7 @@ jobs:
       - name: 서비스 실행
         run: |
           cd /home/ubuntu/step3
-          git clone https://github.com/jeong1230/docker-project
-          cp docker-project/frontend/index.html frontend
-          rm -rf docker-project
+          #git clone https://github.com/jeong1230/docker-project
+          #cp docker-project/frontend/index.html frontend
+          #rm -rf docker-project
           docker compose up -d
